@@ -26,10 +26,12 @@ class Command(BaseCommand):
     def create_superuser(self):
         self.stdout.write(self.style.SUCCESS("Creating superuser..."))
 
-        User.objects.create_superuser(
-            username="admin",
-            password="password",
-        )
+        # Create the superuser if it doesn't exist
+        if not User.objects.filter(username="admin").exists():
+            User.objects.create_superuser(
+                username="admin",
+                password="password",
+            )
 
         self.stdout.write(self.style.SUCCESS("Successfully created the superuser."))
 
@@ -39,7 +41,8 @@ class Command(BaseCommand):
         )
 
         # Clear media files
-        shutil.rmtree(settings.MEDIA_ROOT)
+        if os.path.exists(settings.MEDIA_ROOT):
+            shutil.rmtree(settings.MEDIA_ROOT)
 
         # Create demo uploads
         for filename in os.listdir(DEMO_UPLOADS_PATH):
