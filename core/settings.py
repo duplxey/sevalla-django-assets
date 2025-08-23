@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-w3j^a!-^5cb9i4f=be_q=89sd!-_kcrn&sye+3zzc9rcb=!rd9"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
@@ -121,14 +121,30 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "mediafiles"
 
-STORAGES = {
-    "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
-    },
-    "staticfiles": {
-        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
-    },
-}
+if DEBUG:
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
+else:
+    AWS_S3_REGION_NAME = "<object-storage-location>"
+    AWS_STORAGE_BUCKET_NAME = "<object-storage-bucket-name>"
+    AWS_S3_ENDPOINT_URL = "<object-storage-endpoint>"
+    AWS_S3_ACCESS_KEY_ID = "<object-storage-access-key>"
+    AWS_S3_SECRET_ACCESS_KEY = "<object-storage-secret-key>"
+
+    STORAGES = {
+        "default": {
+            "BACKEND": "core.storages.MediaStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "core.storages.StaticStorage",
+        },
+    }
 
 
 # Default primary key field type
